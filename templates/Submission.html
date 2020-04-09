@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Predicted category</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+    <div id="container">
+     <div class="pagetitle">
+       <h1>Text submitted</h1>
+     </div>
+     <div id="main">
+       <p>Category prediction</p>
+        <strong>Input text</strong>: {{sentence}} <br>
+        <strong>Prediction</strong>: {{prediction}} <br>
+          <!-- Enter text to process -->
+        <strong>Correct? </strong> <br>
+        <form id="send_feedback", method="post" action="{{ url_for('feedback_received') }}">
+          <input type="radio" name="feedback" value='correct'>Correct<br>
+          <input type="radio" name="feedback" value='incorrect'>Incorrect<br>
+          <input type='hidden' name="sentence" value='{{sentence}}'><br>
+            <input type='hidden' name="prediction" value='{{prediction}}'><br>
+          <input type ="submit" name="action" value="Send Feedback"> <br>
+        </form>
+       </p>
+     </div>
+   </div>
+</body>
+</html>

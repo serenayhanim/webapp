@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="container">
+
+      <div class="pagetitle">
+        <h1>Predict Category</h1>
+      </div>
+
+      <div id="count">
+        <form id="process", method="post" action="{{ url_for('submitted_form') }}">
+
+          <!-- Enter text to process -->
+          <label for="input_text">Enter some text to process:</label> <input type="text" name="input_text"><br />
+          <input type ="submit" name="action" value="Predict">
+        </form>
+      </div>
+    </div>
+</body>
+</html>
