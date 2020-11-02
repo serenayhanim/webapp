@@ -1,5 +1,4 @@
 import pickle
-import pymysql
 from sqlalchemy import create_engine
 from nltk import WordNetLemmatizer
 from nltk.corpus import stopwords
@@ -26,19 +25,8 @@ from sklearn.linear_model import LogisticRegression
 data_folder = 'satire/'
 stop_words = set(stopwords.words('english'))
 
-connection = pymysql.connect(host='csmysql.cs.cf.ac.uk',
-                             user='c1979282',
-                             password='Password2020.',
-                             db='c1979282_coursework')
-
-cursor = connection.cursor()
-
 # create sqlalchemy engine
-engine = create_engine("mysql+pymysql://{user}:{pw}@{host}/{db}"
-                       .format(user='c1979282',
-                               pw='Password2020.',
-                               db='c1979282_coursework',
-                               host='csmysql.cs.cf.ac.uk'))
+engine = create_engine('postgresql://serenay@localhost/postgres')
 
 
 def load_data(data_folder):
@@ -68,9 +56,7 @@ def process_input(sentence):
     tokens_nostop = [t for t in tokens_alpha if t not in stop_words]
     wordnet_lemmatizer = WordNetLemmatizer()
     tokens_lemmatised = [wordnet_lemmatizer.lemmatize(t) for t in tokens_nostop]
-
     return tokens_lemmatised
-
 
 dict = load_data(data_folder)
 
@@ -92,25 +78,19 @@ test_table.to_sql('Test_table', con=engine, if_exists='replace', chunksize=1000)
 
 
 def train_classifiers():
-
     # versioning
     os.getcwd()
     files = glob("models/*.model")
     files
     a = files.sort()
-    a
-
     try:
         cur_num = int(re.search(r"\d+(?=\.model)", files[-1]).group())
         cur_num += 1
     except IndexError:
         cur_num = 0
 
-    cur_num
-
-
-    df_train = pd.read_sql('SELECT * FROM Train_table', con=engine)
-    df_test = pd.read_sql('SELECT * FROM Test_table', con=engine)
+    df_train = pd.read_sql_query('select * from public."Train_table"', con=engine)
+    df_test = pd.read_sql_query('select * from public."Test_table"', con=engine)
 
     count_vectorizer = CountVectorizer()
     count_train = count_vectorizer.fit_transform(df_train['document'])
@@ -129,7 +109,6 @@ def train_classifiers():
     pickle.dump(nb_classifier, out_nb_model)
     out_nb_model.close()
 
-
     log_classifier = LogisticRegression(random_state=0, max_iter=1000)
     log_classifier.fit(count_train, df_train['label'])
     log_pred = log_classifier.predict(count_test)
@@ -143,18 +122,8 @@ def train_classifiers():
     dictionary = {'model_name': ['naive_bayes', 'logistic_regression'], 'model_path': [nb_model_path, log_model_path],
                   'score': [nb_score, log_score]}
     df_classifier = pd.DataFrame(dictionary)
-    df_classifier
     df_classifier.to_sql('Classifier_table', con=engine, if_exists='append', chunksize=1000)
-
     return nb_score, log_score
 
 train_classifiers()
-# classifier = pd.read_sql(
-#     'SELECT * FROM Classifier_table WHERE score=(SELECT MAX(score) FROM Classifier_table)',
-#     con=engine)
-# classifier
 
-
-# cm = metrics.confusion_matrix(y_test, pred)
-# plot_confusion_matrix(nb_classifier, count_test, y_test, cmap=plt.cm.Blues, values_format='.0f')
-# print(classification_report(y_test, pred)
