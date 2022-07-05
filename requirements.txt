@@ -174,7 +174,7 @@ ptyprocess==0.6.0
 py @ file:///tmp/build/80754af9/py_1593446248552/work
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
-pycares==3.1.1
+pycares==4.2.0
 pycodestyle==2.6.0
 pycosat==0.6.3
 pycparser @ file:///tmp/build/80754af9/pycparser_1594388511720/work
